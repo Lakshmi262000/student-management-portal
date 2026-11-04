@@ -10,6 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in {"1", "true", "yes"}
+if os.environ.get("VERCEL"):
+    DEBUG = False
+
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     if not DEBUG:
@@ -25,6 +28,16 @@ ALLOWED_HOSTS = [
     ).split(",")
     if host.strip()
 ]
+vercel_hosts = {
+    host.strip().split("/", 1)[0]
+    for variable in (
+        "VERCEL_URL",
+        "VERCEL_PROJECT_PRODUCTION_URL",
+        "VERCEL_BRANCH_URL",
+    )
+    if (host := os.environ.get(variable, "").strip())
+}
+ALLOWED_HOSTS.extend(host for host in vercel_hosts if host not in ALLOWED_HOSTS)
 render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if render_hostname and render_hostname not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(render_hostname)
@@ -33,6 +46,11 @@ CSRF_TRUSTED_ORIGINS = [
     for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
     if origin.strip()
 ]
+CSRF_TRUSTED_ORIGINS.extend(
+    origin
+    for origin in (f"https://{host}" for host in vercel_hosts)
+    if origin not in CSRF_TRUSTED_ORIGINS
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
