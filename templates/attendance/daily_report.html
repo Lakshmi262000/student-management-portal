@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Daily attendance | Students Management Portal{% endblock %}
+{% block content %}
+<section class="content-panel"><p class="eyebrow">ATTENDANCE · DAILY REPORT</p><h1>{{ selected_date|date:"F j, Y" }}</h1>
+  <form method="get" class="filter-form"><div class="field-group"><label for="{{ form.date.id_for_label }}">Attendance date</label>{{ form.date }}{% for error in form.date.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div><button type="submit">View report</button></form>
+  <h2>Student attendance</h2><div class="table-wrap"><table><thead><tr><th>Student</th><th>ID</th><th>Course / batch</th><th>Status</th><th>Marked by</th></tr></thead><tbody>
+    {% for record in student_records %}<tr><td>{{ record.student.user.get_full_name|default:record.student.user.username }}</td><td>{{ record.student.student_id }}</td><td>{{ record.student.batch.course.name }} / {{ record.student.batch.name }}</td><td>{{ record.get_status_display }}</td><td>{{ record.marked_by.get_full_name|default:record.marked_by.username }}</td></tr>
+    {% empty %}<tr><td colspan="5" class="empty">No student attendance recorded for this date.</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% if request.user.role == "ADMIN" or request.user.role == "STAFF" %}
+    <h2>{% if request.user.role == "ADMIN" %}Staff attendance{% else %}My staff attendance{% endif %}</h2><div class="table-wrap"><table><thead><tr><th>Staff member</th><th>ID</th><th>Status</th><th>Marked by</th></tr></thead><tbody>
+      {% for record in staff_records %}<tr><td>{{ record.staff.user.get_full_name|default:record.staff.user.username }}</td><td>{{ record.staff.staff_id }}</td><td>{{ record.get_status_display }}</td><td>{{ record.marked_by.get_full_name|default:record.marked_by.username }}</td></tr>
+      {% empty %}<tr><td colspan="4" class="empty">No staff attendance recorded for this date.</td></tr>{% endfor %}
+    </tbody></table></div>
+  {% endif %}
+</section>
+{% endblock %}

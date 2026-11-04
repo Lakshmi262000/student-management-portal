@@ -1,0 +1,124 @@
+<aside class="sidebar" id="portal-sidebar" aria-label="Main navigation">
+  <a class="sidebar-brand" href="{% url 'dashboard:home' %}">
+    <span class="brand-mark" aria-hidden="true">SP</span>
+    <span class="brand-copy"><strong>Student Portal</strong><small>Management system</small></span>
+  </a>
+
+  <div class="sidebar-user">
+    <span class="user-avatar" aria-hidden="true">{{ request.user.username|first|upper }}</span>
+    <span class="user-copy">
+      <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+      <small><span class="status-dot"></span>{{ request.user.get_role_display }} account</small>
+    </span>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Portal sections">
+    <span class="nav-section-label">OVERVIEW</span>
+    <a class="sidebar-link{% if request.path == '/' %} is-active{% endif %}" href="{% url 'dashboard:home' %}">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
+      <span>Dashboard</span>
+    </a>
+
+    {% if request.user.role == "ADMIN" %}
+      <span class="nav-section-label">PEOPLE</span>
+      <a class="sidebar-link{% if request.path == '/students/' %} is-active{% endif %}" href="{% url 'students:list' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Student directory</span>
+      </a>
+      <a class="sidebar-link sidebar-link-secondary{% if request.path == '/students/register/' %} is-active{% endif %}" href="{% url 'students:register' %}">
+        <span class="nav-link-marker" aria-hidden="true">+</span><span>Register a student</span>
+      </a>
+      <a class="sidebar-link{% if request.path == '/staff/' %} is-active{% endif %}" href="{% url 'staff:list' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/></svg>
+        <span>Staff directory</span>
+      </a>
+      <a class="sidebar-link sidebar-link-secondary{% if request.path == '/staff/add/' %} is-active{% endif %}" href="{% url 'staff:create' %}">
+        <span class="nav-link-marker" aria-hidden="true">+</span><span>Add a staff member</span>
+      </a>
+
+      <span class="nav-section-label">ACADEMICS</span>
+      <a class="sidebar-link{% if '/admin/academics/course/' in request.path %} is-active{% endif %}" href="{% url 'admin:academics_course_changelist' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Courses</span>
+      </a>
+      <a class="sidebar-link{% if '/admin/academics/batch/' in request.path %} is-active{% endif %}" href="{% url 'admin:academics_batch_changelist' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h2M14 14h2M8 17h2"/></svg>
+        <span>Batches</span>
+      </a>
+
+      <span class="nav-section-label">ATTENDANCE</span>
+      <a class="sidebar-link{% if request.path == '/attendance/daily/' %} is-active{% endif %}" href="{% url 'attendance:daily_report' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span>Daily attendance</span>
+      </a>
+      <a class="sidebar-link{% if request.path == '/attendance/reports/' %} is-active{% endif %}" href="{% url 'attendance:reports' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m18 9-5 5-4-4-4 4"/></svg>
+        <span>Student attendance report</span>
+      </a>
+      <a class="sidebar-link{% if request.path == '/attendance/staff/history/' %} is-active{% endif %}" href="{% url 'attendance:staff_history' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M16 11h6M19 8v6"/></svg>
+        <span>Staff attendance report</span>
+      </a>
+      <a class="sidebar-link sidebar-link-secondary{% if request.path == '/attendance/staff/mark/' %} is-active{% endif %}" href="{% url 'attendance:mark_staff' %}">
+        <span class="nav-link-marker" aria-hidden="true">+</span><span>Mark staff attendance</span>
+      </a>
+    {% elif request.user.role == "STAFF" %}
+      <span class="nav-section-label">STUDENT MANAGEMENT</span>
+      <a class="sidebar-link{% if request.path == '/students/' %} is-active{% endif %}" href="{% url 'students:list' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Assigned students</span>
+      </a>
+      <a class="sidebar-link sidebar-link-secondary{% if request.path == '/students/register/' %} is-active{% endif %}" href="{% url 'students:register' %}">
+        <span class="nav-link-marker" aria-hidden="true">+</span><span>Register a student</span>
+      </a>
+
+      <span class="nav-section-label">MY ACCOUNT</span>
+      <a class="sidebar-link{% if request.path == '/staff/profile/' %} is-active{% endif %}" href="{% url 'staff:profile' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+        <span>My profile</span>
+      </a>
+
+      <span class="nav-section-label">ATTENDANCE</span>
+      <a class="sidebar-link{% if request.path == '/attendance/daily/' %} is-active{% endif %}" href="{% url 'attendance:daily_report' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span>Daily attendance</span>
+      </a>
+      <a class="sidebar-link{% if request.path == '/attendance/reports/' %} is-active{% endif %}" href="{% url 'attendance:reports' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m18 9-5 5-4-4-4 4"/></svg>
+        <span>Student attendance report</span>
+      </a>
+      <a class="sidebar-link{% if request.path == '/attendance/staff/history/' %} is-active{% endif %}" href="{% url 'attendance:staff_history' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span>My attendance history</span>
+      </a>
+    {% else %}
+      <span class="nav-section-label">MY ACCOUNT</span>
+      <a class="sidebar-link{% if request.path == '/students/me/' or '/students/' in request.path %} is-active{% endif %}" href="{% url 'students:my_profile' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+        <span>My student profile</span>
+      </a>
+      <span class="nav-section-label">ATTENDANCE</span>
+      <a class="sidebar-link{% if '/attendance/' in request.path %} is-active{% endif %}" href="{% url 'attendance:reports' %}">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m18 9-5 5-4-4-4 4"/></svg>
+        <span>My attendance history</span>
+      </a>
+    {% endif %}
+  </nav>
+
+  <div class="sidebar-account">
+    <span class="nav-section-label">ACCOUNT</span>
+    <a class="account-action" href="{% url 'password_change' %}">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4M12 15v2"/></svg>
+      <span>Change password</span>
+      <span class="account-action-arrow" aria-hidden="true">›</span>
+    </a>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button class="account-action signout-action" type="submit">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>
+        <span>Sign out</span>
+        <span class="account-action-arrow" aria-hidden="true">›</span>
+      </button>
+    </form>
+  </div>
+</aside>

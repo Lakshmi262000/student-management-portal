@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Attendance reports | Students Management Portal{% endblock %}
+{% block content %}
+<section class="content-panel"><p class="eyebrow">ATTENDANCE</p><h1>Student attendance report</h1>
+  <form method="get" class="filter-form">{% for field in form %}<div class="field-group"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}<button type="submit">Filter</button></form>
+  <a class="button-link secondary-link" href="{% url 'attendance:daily_report' %}">Open daily report</a>
+  {% if monthly_summaries %}<h2>Monthly summaries</h2><div class="table-wrap"><table><thead><tr><th>Student</th><th>Present / late</th><th>Absent</th><th>Attendance</th></tr></thead><tbody>
+    {% for summary in monthly_summaries %}<tr><td>{{ summary.student.user.get_full_name|default:summary.student.user.username }}</td><td>{{ summary.present }}</td><td>{{ summary.absent }}</td><td>{{ summary.percentage }}%</td></tr>{% endfor %}
+  </tbody></table></div>{% endif %}
+  <div class="table-wrap"><table><thead><tr><th>Date</th><th>Student</th><th>ID</th><th>Course / batch</th><th>Status</th><th>Marked by</th></tr></thead><tbody>
+    {% for record in records %}<tr><td>{{ record.date|date:"M j, Y" }}</td><td>{{ record.student.user.get_full_name|default:record.student.user.username }}</td><td>{{ record.student.student_id }}</td><td>{{ record.student.batch.course.name }} / {{ record.student.batch.name }}</td><td>{{ record.get_status_display }}</td><td>{{ record.marked_by.get_full_name|default:record.marked_by.username }}</td></tr>
+    {% empty %}<tr><td colspan="6" class="empty">No attendance records for this month.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}My profile | Students Management Portal{% endblock %}
+{% block content %}
+<section class="content-panel"><p class="eyebrow">STAFF PROFILE · {{ profile.staff_id }}</p><h1>My profile</h1>
+  <form method="post" class="portal-form">{% csrf_token %}
+    {% for field in form %}<div class="field-group"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}
+    <button type="submit">Save profile</button>
+  </form>
+  <h2>My attendance history</h2><div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>
+  {% for record in attendance %}<tr><td>{{ record.date|date:"M j, Y" }}</td><td>{{ record.get_status_display }}</td></tr>{% empty %}<tr><td colspan="2" class="empty">No staff attendance records.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <h2>Profile change history</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>Action</th><th>Fields</th><th>Changed by</th></tr></thead><tbody>
+  {% for entry in audit_history %}<tr><td>{{ entry.changed_at|date:"M j, Y H:i" }}</td><td>{{ entry.action|capfirst }}</td><td>{{ entry.changed_fields|join:", " }}</td><td>{{ entry.changed_by.get_full_name|default:entry.changed_by.username }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">No profile changes recorded.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

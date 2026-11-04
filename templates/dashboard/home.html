@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Students Management Portal{% endblock %}
+
+{% block content %}
+<section class="welcome-panel">
+  <p class="eyebrow">{{ request.user.get_role_display }} ACCOUNT · {{ today|date:"F j, Y" }}</p>
+  <h1>
+    {% if request.user.role == "ADMIN" %}Admin dashboard
+    {% elif request.user.role == "STAFF" %}Staff dashboard
+    {% else %}Student dashboard{% endif %}
+  </h1>
+  <p class="muted">Welcome, {{ request.user.get_full_name|default:request.user.username }}.</p>
+
+  {% if request.user.role == "ADMIN" %}
+    <div class="stats-grid">
+      <article class="stat-card"><span>Students</span><strong>{{ total_students }}</strong><a href="{% url 'students:list' %}">View all</a></article>
+      <article class="stat-card"><span>Staff</span><strong>{{ total_staff }}</strong><a href="{% url 'staff:list' %}">View all</a></article>
+      <article class="stat-card"><span>Courses</span><strong>{{ total_courses }}</strong><a href="/admin/academics/course/">Manage</a></article>
+      <article class="stat-card"><span>Batches</span><strong>{{ total_batches }}</strong><a href="/admin/academics/batch/">Manage</a></article>
+      <article class="stat-card"><span>Student attendance today</span><strong>{{ student_attendance_today }}</strong></article>
+      <article class="stat-card"><span>Staff attendance today</span><strong>{{ staff_attendance_today }}</strong><a href="{% url 'attendance:mark_staff' %}">Mark staff attendance</a></article>
+      <article class="stat-card"><span>Present students today</span><strong>{{ present_students }}</strong></article>
+      <article class="stat-card"><span>Absent students today</span><strong>{{ absent_students }}</strong></article>
+    </div>
+    <div class="chart-card"><div class="chart-heading"><h2>Today's attendance</h2><strong>{{ present_percentage }}% present</strong></div><div class="chart-track" role="img" aria-label="{{ present_percentage }} percent of recorded student attendance is present"><span class="chart-fill" style="width: {{ present_percentage }}%"></span></div></div>
+    <div class="actions-row">
+      <a class="button-link" href="{% url 'students:register' %}">Register student</a>
+      <a class="button-link secondary-link" href="{% url 'staff:create' %}">Add staff</a>
+      <a class="button-link secondary-link" href="{% url 'attendance:reports' %}">Attendance reports</a>
+      <a class="button-link secondary-link" href="{% url 'attendance:daily_report' %}">Daily report</a>
+      <a class="button-link secondary-link" href="{% url 'admin:index' %}">Django admin</a>
+    </div>
+    {% include "dashboard/recent_students.html" %}
+  {% elif request.user.role == "STAFF" %}
+    <div class="stats-grid">
+      <article class="stat-card"><span>Assigned students</span><strong>{{ total_assigned_students }}</strong></article>
+      <article class="stat-card"><span>Present today</span><strong>{{ present_students }}</strong></article>
+      <article class="stat-card"><span>Absent today</span><strong>{{ absent_students }}</strong></article>
+      <article class="stat-card"><span>Assigned batches</span><strong>{{ assigned_batches|length }}</strong></article>
+    </div>
+    <div class="chart-card"><div class="chart-heading"><h2>Today's attendance</h2><strong>{{ present_percentage }}% present</strong></div><div class="chart-track" role="img" aria-label="{{ present_percentage }} percent of recorded student attendance is present"><span class="chart-fill" style="width: {{ present_percentage }}%"></span></div></div>
+    <div class="actions-row">
+      <a class="button-link" href="{% url 'students:register' %}">Register student</a>
+      <a class="button-link secondary-link" href="{% url 'students:list' %}">View students</a>
+      <a class="button-link secondary-link" href="{% url 'attendance:daily_report' %}">Daily report</a>
+    </div>
+    <h2>Assigned batches</h2>
+    {% for batch in assigned_batches %}
+      <div class="list-row">
+        <div><strong>{{ batch.name }}</strong><span>{{ batch.course.name }}</span></div>
+        <a href="{% url 'attendance:mark_students' batch.pk %}">Mark attendance</a>
+      </div>
+    {% empty %}
+      <p class="muted">No batches have been assigned to your account yet.</p>
+    {% endfor %}
+    {% include "dashboard/recent_students.html" %}
+  {% else %}
+    {% if student %}
+      <div class="actions-row">
+        <a class="button-link secondary-link" href="{% url 'students:detail' student.pk %}">View my full profile</a>
+        <a class="button-link secondary-link" href="{% url 'attendance:reports' %}">View attendance history</a>
+      </div>
+      <div class="profile-summary">
+        <p><span>Student ID</span><strong>{{ student.student_id }}</strong></p>
+        <p><span>Course</span><strong>{{ student.batch.course.name }}</strong></p>
+        <p><span>Batch</span><strong>{{ student.batch.name }}</strong></p>
+      </div>
+      <div class="stats-grid">
+        <article class="stat-card"><span>Attendance</span><strong>{{ attendance_percentage }}%</strong></article>
+        <article class="stat-card"><span>Present days</span><strong>{{ present_days }}</strong></article>
+        <article class="stat-card"><span>Absent days</span><strong>{{ absent_days }}</strong></article>
+      </div>
+      <h2>Recent attendance</h2>
+      <div class="table-wrap">
+        <table><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>
+          {% for record in recent_attendance %}<tr><td>{{ record.date|date:"M j, Y" }}</td><td>{{ record.get_status_display }}</td></tr>
+          {% empty %}<tr><td colspan="2" class="empty">No attendance records yet.</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+    {% else %}
+      <p class="phase-note">Your student account has no profile associated with it yet. Please contact the institute administrator.</p>
+    {% endif %}
+  {% endif %}
+</section>
+{% endblock %}

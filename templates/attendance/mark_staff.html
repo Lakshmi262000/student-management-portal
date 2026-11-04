@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Mark staff attendance | Students Management Portal{% endblock %}
+{% block content %}
+<section class="content-panel"><p class="eyebrow">STAFF ATTENDANCE</p><h1>Mark staff attendance</h1>
+  <form method="post">{% csrf_token %}
+    <div class="field-group date-field"><label for="{{ date_form.date.id_for_label }}">Attendance date</label>{{ date_form.date }}{% for error in date_form.date.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>
+    <div class="table-wrap"><table><thead><tr><th>Staff member</th><th>Staff ID</th><th>Status</th></tr></thead><tbody>
+      {% for field in bulk_form %}<tr><td>{{ field.label }}</td><td>{{ field.name|slice:"6:" }}</td><td>{{ field }}</td></tr>
+      {% empty %}<tr><td colspan="3" class="empty">No active staff accounts.</td></tr>{% endfor %}
+    </tbody></table></div>
+    {% if profiles %}<button type="submit">Save attendance</button>{% endif %}
+  </form>
+</section>
+{% endblock %}

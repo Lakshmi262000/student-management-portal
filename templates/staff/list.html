@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Staff | Students Management Portal{% endblock %}
+{% block content %}
+<section class="content-panel"><p class="eyebrow">STAFF DIRECTORY</p><h1>Staff</h1>
+  <form method="get" class="search-form"><label class="sr-only" for="staff-search">Search staff</label><input id="staff-search" name="q" value="{{ query }}" placeholder="Name, ID, email or designation"><button type="submit">Search</button></form>
+  <div class="table-wrap"><table><thead><tr><th>Name</th><th>Staff ID</th><th>Email</th><th>Designation</th><th>Assigned batches</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    {% for profile in staff_profiles %}<tr>
+      <td>{{ profile.user.get_full_name|default:profile.user.username }}</td><td>{{ profile.staff_id }}</td><td>{{ profile.user.email }}</td><td>{{ profile.designation }}</td>
+      <td>{% for batch in profile.batches.all %}{{ batch.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td>
+      <td>{% if profile.user.is_active %}Active{% else %}Inactive{% endif %}</td>
+      <td><a href="{% url 'staff:edit' profile.pk %}">Edit / assign batches</a>{% if profile.user.is_active %}<form method="post" action="{% url 'staff:deactivate' profile.pk %}" class="inline-form" onsubmit="return confirm('Deactivate this staff account?');">{% csrf_token %}<button class="link-button danger-link" type="submit">Deactivate</button></form>{% endif %}</td>
+    </tr>{% empty %}<tr><td colspan="7" class="empty">No staff members yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}
