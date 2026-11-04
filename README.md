@@ -123,6 +123,22 @@ serves Django over Render's HTTPS endpoint.
 Keep the Neon URL, SMTP credentials, and all production secrets in Render's
 environment-variable settings, not in Git.
 
+## Deploy to Vercel
+
+The project uses Vercel's native Django detection and sets the WSGI entry point
+in `pyproject.toml`. Import the GitHub repository into Vercel and set these
+environment variables for Production:
+
+- `DATABASE_URL`: Neon PostgreSQL connection URL.
+- `DJANGO_SECRET_KEY`: a long, unique secret.
+- `DJANGO_DEBUG`: `False`.
+- `DJANGO_ALLOWED_HOSTS`: the production Vercel hostname.
+- `DJANGO_CSRF_TRUSTED_ORIGINS`: the HTTPS production URL.
+
+Vercel collects and serves Django static assets during its build. If the schema
+needs updates, run `python manage.py migrate` against the same Neon database
+before deploying. Never commit `.env` or paste database credentials into Git.
+
 ## Checks and tests
 
 ```powershell
